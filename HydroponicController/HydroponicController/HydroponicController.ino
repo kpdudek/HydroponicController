@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-#include <Time.h>
-#include <Math.h>
+#include <time.h>
+#include <math.h>
 
 // Pinout list
 #define menu_encoder_CLK 3
@@ -22,8 +22,8 @@ unsigned long t=0,t_prev=0,print_prev=0,freq=250;
 unsigned long hours=0,minutes=0,seconds=0,milliseconds=0;
 unsigned long weeks=0,days=0;
 
-unsigned long time_on,time_off,cycles_per_day;
-unsigned long t_pump;
+unsigned long int time_on=0,time_off=0,cycles_per_day=0;
+unsigned long int t_pump = 0;
 bool is_pump_on = false;
 
 // Menu encoder variables
@@ -53,10 +53,10 @@ void setup() {
 
   // Set pump interval values
   cycles_per_day = 6;
-  // time_on = 1*60000; // minutes to milliseconds
-  // time_off = 86400000 / cycles_per_day; // 24 hours in milliseconds / cycles per day
-  time_on = 10 * 1000; // Test values
-  time_off = 30 * 1000; // Test values
+   time_on = 60000; // minutes to milliseconds
+   time_off = 86400000 / cycles_per_day; // 24 hours in milliseconds / cycles per day
+//  time_on = 60000; // Test values
+//  time_off = 120000; // Test values
 
   // Initialize the relays to a known state
   digitalWrite(relay_1,HIGH);
@@ -67,6 +67,8 @@ void setup() {
   lcd.init();
   lcd.backlight();
   lcd.blink();
+
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -155,20 +157,24 @@ void draw(){
 
     lcd.setCursor(0,1);
     // sprintf(buffer,"%-5d",menu_encoder_counter);
-    sprintf(buffer,"On Cycle (min): %lu",time_on/900000);
+    sprintf(buffer,"On (min): %lu",time_on/1000);
     lcd.print(buffer);
 
     lcd.setCursor(0,2);
     // sprintf(buffer,"%d",menu_button_state);
     sprintf(buffer,"Cycles/day: %lu",cycles_per_day);
+//    sprintf(buffer,"Off (min): %lu",time_off/1000);
     lcd.print(buffer);
 
     lcd.setCursor(0,3);
-    sprintf(buffer,"W:%-2lu H:%-2lu M:%-2lu S:%-2lu",weeks,hours,minutes,seconds);
+    sprintf(buffer,"D:%-2lu H:%-2lu M:%-2lu S:%-2lu",days,hours,minutes,seconds);
     lcd.print(buffer);
 
     lcd.setCursor(cursor_c,cursor_r);
 
+    Serial.println(time_on);
+    Serial.println(time_off);
+    Serial.println();
     print_prev=t;
   }
 }
